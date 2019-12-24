@@ -3,18 +3,19 @@ import pygame
 
 pygame.init()
 pygame.font.init()
-S_COLOR = (48, 77, 219, 100)
-FOOD_COLOR = (255, 0, 0)
+# S_COLOR = (48, 77, 219)
+S_COLOR = (15, 119, 220)
+FOOD_COLOR = (214, 70, 62)
 TXT_COLOR = (204, 50, 50)
 WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
 ICON = pygame.image.load('img/snake.ico')
 BGIMG = pygame.image.load("img/grassboard.png")
+TITLE = 'Slithering Snake!'
 
 WIDTH = 500
 ROWS = 20
 gameScreen = pygame.display.set_mode((WIDTH, WIDTH))
-pygame.display.set_caption('Snakey Snake!')
+pygame.display.set_caption(TITLE)
 pygame.display.set_icon(ICON)
 clock = pygame.time.Clock()
 gameOver = False
@@ -167,19 +168,22 @@ def showText(fontStyle, fontSize, text, color, ySpacing):
 
 
 def pausedMenu(col):
-    showText("comicsansms", 55, "Snakey Snake!", col, 50)
-    showText("comicsansms", 40, "Press:", col, 150)
-    showText("comicsansms", 30, "'Spacebar' - Play / Pause", col, 200)
-    showText("comicsansms", 30, "'Esc' - Play / Pause", col, 250)
-    showText("comicsansms", 30, "'Q' - Quit Game", col, 300)
+    iconRect = ICON.get_rect(center=(WIDTH // 2, 80))
+    gameScreen.blit(ICON, iconRect)
+    showText("comicsansms", 50, TITLE, (14, 158, 67), 90)
+    showText("comicsansms", 40, "--------------------", col, 130)
+    showText("comicsansms", 40, "Press:", col, 170)
+    showText("comicsansms", 30, "'Arrow Keys' - Move Snake", col, 220)
+    showText("comicsansms", 30, "'Esc' / 'Space' - Play / Pause", col, 270)
+    showText("comicsansms", 30, "'Q' - Quit Game", col, 320)
 
 
 def gameOverMenu(col, score):
-    showText("comicsansms", 55, "Snakey Snake!", col, 10)
+    showText("comicsansms", 50, TITLE, (14, 158, 67), 10)
     showText("comicsansms", 40, "* Game Over *", col, 100)
     showText("comicsansms", 40, f"Your Score: {score}", col, 160)
-    showText("comicsansms", 30, "'Spacebar' - Play / Pause", col, 230)
-    showText("comicsansms", 30, "'Esc' - Play / Pause", col, 270)
+    showText("comicsansms", 30, "'Arrow Keys' - Move Snake", col, 230)
+    showText("comicsansms", 30, "'Esc' / 'Space' - Play / Pause", col, 270)
     showText("comicsansms", 30, "'Q' - Quit Game", col, 310)
 
 
@@ -220,8 +224,8 @@ def mainLoop():
                                  lambda: pausedMenu(TXT_COLOR))
 
         if not paused:
-            S.move()
             clock.tick(8)
+            S.move()
 
             if S.body[0].pos == food.pos:
                 S.addCircle()
