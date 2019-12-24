@@ -1,12 +1,11 @@
 import random
-import tkinter as tk
-from tkinter import messagebox
 import pygame
 
 pygame.init()
 pygame.font.init()
 S_COLOR = (48, 77, 219, 100)
 FOOD_COLOR = (255, 0, 0)
+TXT_COLOR = (204, 50, 50)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 ICON = pygame.image.load('img/snake.ico')
@@ -148,14 +147,14 @@ def updateScreen(surface):
     pygame.display.update()
 
 
-def fade(width, height):
+def showMenu(width, height, txtFunc):
     global paused
-    fade = pygame.Surface((width, height))
-    fade.fill((255, 255, 255))
-    for alpha in range(20):
-        fade.set_alpha(alpha)
-        gameScreen.blit(fade, (25, 25))
-        pausedMenu((204, 50, 50))
+    menuBox = pygame.Surface((width, height))
+    menuBox.fill(WHITE)
+    for alpha in range(21):
+        menuBox.set_alpha(alpha)
+        gameScreen.blit(menuBox, (25, 25))
+        txtFunc()
         pygame.display.update()
         pygame.time.delay(5)
 
@@ -175,6 +174,15 @@ def pausedMenu(col):
     showText("comicsansms", 30, "'Q' - Quit Game", col, 300)
 
 
+def gameOverMenu(col, score):
+    showText("comicsansms", 55, "Snakey Snake!", col, 10)
+    showText("comicsansms", 40, "* Game Over *", col, 100)
+    showText("comicsansms", 40, f"Your Score: {score}", col, 160)
+    showText("comicsansms", 30, "'Spacebar' - Play / Pause", col, 230)
+    showText("comicsansms", 30, "'Esc' - Play / Pause", col, 270)
+    showText("comicsansms", 30, "'Q' - Quit Game", col, 310)
+
+
 def randomFood(r, snake):
     while True:
         x = random.randrange(r)
@@ -188,17 +196,6 @@ def randomFood(r, snake):
     return (x, y)
 
 
-def msgBox(subject, content):
-    root = tk.Tk()
-    root.attributes("-topmost", True)
-    root.withdraw()
-    messagebox.showinfo(subject, content)
-    try:
-        root.destroy()
-    except:
-        pass
-
-
 def mainLoop():
     global WIDTH, ROWS, gameScreen, gameOver, S, food, paused
     paused = True
@@ -206,7 +203,7 @@ def mainLoop():
     S = Snake((0, 255, 0), (12, 12))
     food = Circle(randomFood(ROWS, S), 0, 0, FOOD_COLOR)
     gameScreen.blit(BGIMG, (0, 0))
-    fade(WIDTH - 50, WIDTH - 50)
+    showMenu(WIDTH - 50, WIDTH - 50, lambda: pausedMenu(TXT_COLOR))
 
     while not gameOver:
 
@@ -218,24 +215,27 @@ def mainLoop():
                     gameOver = True
                 if event.key == pygame.K_ESCAPE or event.key == pygame.K_SPACE:
                     paused = not paused
-                    fade(WIDTH - 50, WIDTH - 50)
+                    if paused:
+                        showMenu(WIDTH - 50, WIDTH - 50,
+                                 lambda: pausedMenu(TXT_COLOR))
 
-        clock.tick(8)
         if not paused:
             S.move()
+            clock.tick(8)
 
             if S.body[0].pos == food.pos:
                 S.addCircle()
                 food = Circle(randomFood(ROWS, S), 0, 0, FOOD_COLOR)
 
+            updateScreen(gameScreen)
+
             for i in range(len(S.body)):
-                if S.body[i].pos in list(map(lambda sk: sk.pos, S.body[i+1:])):
-                    msgBox('Game Over!',
-                           f'Your Score: {str(len(S.body))}\nPlay again...')
+                if S.body[i].pos in list(map(lambda sk: sk.pos, S.body[i + 1:])):
+                    paused = True
+                    showMenu(WIDTH - 50, WIDTH - 50,
+                             lambda: gameOverMenu(TXT_COLOR, str(len(S.body))))
                     S.reset((10, 10))
                     break
-
-            updateScreen(gameScreen)
 
 
 mainLoop()
