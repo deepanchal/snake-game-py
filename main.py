@@ -3,7 +3,8 @@ import pygame
 
 pygame.init()
 pygame.font.init()
-# S_COLOR = (48, 77, 219)
+
+# Global Colors and Images
 S_COLOR = (15, 119, 220)
 FOOD_COLOR = (214, 70, 62)
 TXT_COLOR = (204, 50, 50)
@@ -12,6 +13,7 @@ ICON = pygame.image.load('img/snake.ico')
 BGIMG = pygame.image.load("img/grassboard.png")
 TITLE = 'Slithering Snake!'
 
+# Initialize Game Vars
 WIDTH = 500
 ROWS = 20
 gameScreen = pygame.display.set_mode((WIDTH, WIDTH))
@@ -234,6 +236,7 @@ def mainLoop():
             updateScreen(gameScreen)
 
             for i in range(len(S.body)):
+                # Check if snake collides with its body
                 if S.body[i].pos in list(map(lambda sk: sk.pos, S.body[i + 1:])):
                     paused = True
                     showMenu(WIDTH - 50, WIDTH - 50,
